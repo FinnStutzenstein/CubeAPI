@@ -1,0 +1,10 @@
+E:\Proggen\VB\c#\CubeAPI\CubeAPI\bin\Debug\CubeAPI.dll
+E:\Proggen\VB\c#\CubeAPI\CubeAPI\bin\Debug\CubeAPI.pdb
+E:\Proggen\VB\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.dll
+E:\Proggen\VB\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.pdb
+E:\Proggen\VB\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.csprojResolveAssemblyReference.cache
+E:\Proggen\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.csprojResolveAssemblyReference.cache
+E:\Proggen\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.dll
+E:\Proggen\c#\CubeAPI\CubeAPI\bin\Debug\CubeAPI.dll
+E:\Proggen\c#\CubeAPI\CubeAPI\bin\Debug\CubeAPI.pdb
+E:\Proggen\c#\CubeAPI\CubeAPI\obj\Debug\CubeAPI.pdb
