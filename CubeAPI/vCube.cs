@@ -13,12 +13,62 @@ namespace CubeAPI
         {
             clear_WholeCube();
         }
-        public vCube(bool state)
+        public vCube (bool state)
         {
             set_WholeCube(state);
         }
+        public vCube(byte[] bytes)
+        {
+            set_WholeCube(false);
+            if(bytes.Length != 125)
+            {
+                throw new ArgumentException("Arraygroesse stimmt nicht");
+            }
+            write_Bytes(bytes);
+        }
 
+        public byte[] get_Bytes()
+        {
+            byte[] res = new byte[125];
+            int pos = 0;
 
+            for (int layer = 0; layer < 10; layer++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    for (int z = 0; z < 10; z++)
+                    {
+                        int pos_ = (int)Math.Floor(pos / 8.0); //Hilfsposition für das byte (8er Segmente)
+                        res[pos_] = (byte)(res[pos_] | ((get_Pixel(x, layer, z) ? 1 : 0) << (pos % 8))); //Bit setzen
+                        pos++;
+                    }
+                }
+            }
+
+            return res;
+        }
+        private void write_Bytes(byte[] bytes)
+        {
+            int pos = 0;
+
+            for (int layer = 0; layer < 10; layer++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    for (int z = 0; z < 10; z++)
+                    {
+                        int pos_ = (int)Math.Floor(pos / 8.0); //Hilfsposition für das byte (8er Segmente)
+
+                        if ( (byte)(bytes[pos_] & (1<<(pos % 8))) != 0) //ist das passende Bit gesetzt?
+                        {
+                            set_Pixel(x, layer, z);
+                        }
+
+                        pos++;
+                    }
+                }
+            }
+        }
 
         public bool get_Pixel(int x, int y, int z)
         {
@@ -49,9 +99,9 @@ namespace CubeAPI
             {
                 set_WholeCube(true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_WholeCube(bool value)
@@ -69,9 +119,9 @@ namespace CubeAPI
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_WholeCube()
@@ -80,9 +130,9 @@ namespace CubeAPI
             {
                 set_WholeCube(false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_WholeCube()
@@ -100,9 +150,9 @@ namespace CubeAPI
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -112,9 +162,9 @@ namespace CubeAPI
             {
                 set_Layer(nr, true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Layer(int nr, bool value)
@@ -137,9 +187,9 @@ namespace CubeAPI
             {
                 set_Layer(nr, false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Layer(int nr)
@@ -253,9 +303,9 @@ namespace CubeAPI
             {
                 set_Cube(x1, y1, z1, x2, y2, z2, true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Cube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -283,9 +333,9 @@ namespace CubeAPI
             {
                 set_Cube(x1, y1, z1, x2, y2, z2, false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Cube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -330,9 +380,9 @@ namespace CubeAPI
             {
                 set_FilledCube(x1, y1, z1, x2, y2, z2, true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_FilledCube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -364,9 +414,9 @@ namespace CubeAPI
             {
                 set_FilledCube(x1, y1, z1, x2, y2, z2, false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_FilledCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -415,9 +465,9 @@ namespace CubeAPI
             {
                 set_EdgeCube(x1, y1, z1, x2, y2, z2, true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_EdgeCube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -454,9 +504,9 @@ namespace CubeAPI
             {
                 set_EdgeCube(x1, y1, z1, x2, y2, z2, false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_EdgeCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -509,9 +559,9 @@ namespace CubeAPI
             {
                 set_Line(x1, y1, z1, x2, y2, z2, true);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Line(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -603,9 +653,9 @@ namespace CubeAPI
             {
                 set_Line(x1, y1, z1, x2, y2, z2, false);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Line(int x1, int y1, int z1, int x2, int y2, int z2)

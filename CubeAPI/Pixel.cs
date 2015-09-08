@@ -27,9 +27,9 @@ namespace CubeAPI
                 setCoords(x, y, z);
                 this.value = false;
             }
-            catch (ArgumentOutOfRangeException e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public Pixel(int x, int y, int z, bool value)
@@ -39,9 +39,9 @@ namespace CubeAPI
                 setCoords(x, y, z);
                 this.value = value;
             }
-            catch (ArgumentOutOfRangeException e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 

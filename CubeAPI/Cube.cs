@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CubeAPI
 {
-    public class Cube : ICube
+    public class Cube : ICube, IDisposable
     {
         private vCube bCube; //buffer
         private CommunicationInterface Cobj;
@@ -18,12 +18,18 @@ namespace CubeAPI
             Cobj = new CommunicationInterface();
         }
 
+        public void Dispose()
+        {
+            try
+            {
+                Cobj.Dispose();
+            }
+            catch
+            {
 
-        /* Todo:
-         * - Weitere Funktionen uebertragen??
-         * - Gross und Kleinschreibung bei Funktionen
-         * 
-         */
+            }
+        }
+
 
         public void Connect(string port)
         {
@@ -37,9 +43,9 @@ namespace CubeAPI
                 byte ret = Cobj.read();
                 if (ret != (byte)CTP.Handshake().ToCharArray()[0]) throw new ConnectionRefusedException("Kein Handshake beim Verbinden");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -55,9 +61,9 @@ namespace CubeAPI
                 byte ret = Cobj.read();
                 if (ret != (byte)CTP.Handshake().ToCharArray()[0]) throw new ConnectionRefusedException("Kein Handshake beim Verbinden");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -73,22 +79,15 @@ namespace CubeAPI
                 byte ret = Cobj.read();
                 if (ret != (byte)CTP.Handshake().ToCharArray()[0]) throw new ConnectionRefusedException("Kein Handshake beim Verbinden");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
         public string AutoConnect()
         {
-            try
-            {
-                return Cobj.AutoConnect();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+             return Cobj.AutoConnect();
         }
 
         public void Disconnect()
@@ -103,9 +102,19 @@ namespace CubeAPI
             }
         }
 
+        public bool isInitialized()
+        {
+            return Cobj.isInitialized();
+        }
+
         public bool isConnected()
         {
             return Cobj.isConnected();
+        }
+
+        public bool isReady()
+        {
+            return Cobj.isReady();
         }
 
         public string[] getAvailablePortNames()
@@ -129,9 +138,9 @@ namespace CubeAPI
             {
                 Cobj.writeCube(bCube);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -142,9 +151,9 @@ namespace CubeAPI
                 bCube = cube;
                 Flush();
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -160,6 +169,7 @@ namespace CubeAPI
 
         public void writeCube(vCube cube)
         {
+            setBufferCube(cube);
             Cobj.writeCube(cube);
         }
 
@@ -176,9 +186,9 @@ namespace CubeAPI
                 //string ret = Cobj.read();
                 //if (ret != command) throw new ConnectionRefusedException("Keine Antwort auf Befehl \"" + command + "\"");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -188,9 +198,9 @@ namespace CubeAPI
             {
                 sendCommand(CTP.Handshake());
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -204,9 +214,9 @@ namespace CubeAPI
                 bCube.set_WholeCube();
                 sendCommand(CTP.set_WholeCube());
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_WholeCube(bool value)
@@ -217,9 +227,9 @@ namespace CubeAPI
                 sendCommand(CTP.set_WholeCube(value));
 
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_WholeCube()
@@ -229,9 +239,9 @@ namespace CubeAPI
                 bCube.clear_WholeCube();
                 sendCommand(CTP.clear_WholeCube());
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_WholeCube()
@@ -241,9 +251,9 @@ namespace CubeAPI
                 bCube.invert_WholeCube();
                 sendCommand(CTP.invert_WholeCube());
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -254,9 +264,9 @@ namespace CubeAPI
                 bCube.set_Layer(nr);
                 sendCommand(CTP.set_Layer(nr));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Layer(int nr, bool value)
@@ -266,9 +276,9 @@ namespace CubeAPI
                 bCube.set_Layer(nr, value);
                 sendCommand(CTP.set_Layer(nr, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Layer(int nr)
@@ -278,9 +288,9 @@ namespace CubeAPI
                 bCube.clear_Layer(nr);
                 sendCommand(CTP.clear_Layer(nr));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Layer(int nr)
@@ -290,9 +300,9 @@ namespace CubeAPI
                 bCube.invert_Layer(nr);
                 sendCommand(CTP.invert_Layer(nr));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -303,9 +313,9 @@ namespace CubeAPI
                 bCube.set_Pixel(x, y, z);
                 sendCommand(CTP.set_Pixel(x, y, z));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Pixel(int x, int y, int z, bool value)
@@ -315,9 +325,9 @@ namespace CubeAPI
                 bCube.set_Pixel(x, y, z, value);
                 sendCommand(CTP.set_Pixel(x, y, z, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Pixel(int x, int y, int z)
@@ -327,9 +337,9 @@ namespace CubeAPI
                 bCube.clear_Pixel(x, y, z);
                 sendCommand(CTP.clear_Pixel(x, y, z));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Pixel(int x, int y, int z)
@@ -339,9 +349,9 @@ namespace CubeAPI
                 bCube.invert_Pixel(x, y, z);
                 sendCommand(CTP.invert_Pixel(x, y, z));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -352,9 +362,9 @@ namespace CubeAPI
                 bCube.set_Pixel(p);
                 sendCommand(CTP.set_Pixel(p));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Pixel(Pixel p, bool value)
@@ -364,9 +374,9 @@ namespace CubeAPI
                 bCube.set_Pixel(p, value);
                 sendCommand(CTP.set_Pixel(p, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Pixel(Pixel p)
@@ -376,9 +386,9 @@ namespace CubeAPI
                 bCube.clear_Pixel(p);
                 sendCommand(CTP.clear_Pixel(p));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Pixel(Pixel p)
@@ -388,9 +398,9 @@ namespace CubeAPI
                 bCube.invert_Pixel(p);
                 sendCommand(CTP.invert_Pixel(p));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -410,9 +420,9 @@ namespace CubeAPI
                 bCube.set_Cube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.set_Cube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Cube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -422,9 +432,9 @@ namespace CubeAPI
                 bCube.set_Cube(x1, y1, z1, x2, y2, z2, value);
                 sendCommand(CTP.set_Cube(x1, y1, z1, x2, y2, z2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Cube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -434,9 +444,9 @@ namespace CubeAPI
                 bCube.clear_Cube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.clear_Cube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Cube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -446,9 +456,9 @@ namespace CubeAPI
                 bCube.invert_Cube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.invert_Cube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -459,9 +469,9 @@ namespace CubeAPI
                 bCube.set_Cube(p1, p2);
                 sendCommand(CTP.set_Cube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Cube(Pixel p1, Pixel p2, bool value)
@@ -471,9 +481,9 @@ namespace CubeAPI
                 bCube.set_Cube(p1, p2, value);
                 sendCommand(CTP.set_Cube(p1, p2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Cube(Pixel p1, Pixel p2)
@@ -483,9 +493,9 @@ namespace CubeAPI
                 bCube.clear_Cube(p1, p2);
                 sendCommand(CTP.clear_Cube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Cube(Pixel p1, Pixel p2)
@@ -495,9 +505,9 @@ namespace CubeAPI
                 bCube.invert_Cube(p1, p2);
                 sendCommand(CTP.invert_Cube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -508,9 +518,9 @@ namespace CubeAPI
                 bCube.set_FilledCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.set_FilledCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_FilledCube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -520,9 +530,9 @@ namespace CubeAPI
                 bCube.set_FilledCube(x1, y1, z1, x2, y2, z2, value);
                 sendCommand(CTP.set_FilledCube(x1, y1, z1, x2, y2, z2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_FilledCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -532,9 +542,9 @@ namespace CubeAPI
                 bCube.clear_FilledCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.clear_FilledCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_FilledCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -544,9 +554,9 @@ namespace CubeAPI
                 bCube.invert_FilledCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.invert_FilledCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -557,9 +567,9 @@ namespace CubeAPI
                 bCube.set_FilledCube(p1, p2);
                 sendCommand(CTP.set_FilledCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_FilledCube(Pixel p1, Pixel p2, bool value)
@@ -569,9 +579,9 @@ namespace CubeAPI
                 bCube.set_FilledCube(p1, p2, value);
                 sendCommand(CTP.set_FilledCube(p1, p2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_FilledCube(Pixel p1, Pixel p2)
@@ -581,9 +591,9 @@ namespace CubeAPI
                 bCube.clear_FilledCube(p1, p2);
                 sendCommand(CTP.clear_FilledCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_FilledCube(Pixel p1, Pixel p2)
@@ -593,9 +603,9 @@ namespace CubeAPI
                 bCube.invert_FilledCube(p1, p2);
                 sendCommand(CTP.invert_FilledCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -606,9 +616,9 @@ namespace CubeAPI
                 bCube.set_EdgeCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.set_EdgeCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_EdgeCube(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -618,9 +628,9 @@ namespace CubeAPI
                 bCube.set_EdgeCube(x1, y1, z1, x2, y2, z2, value);
                 sendCommand(CTP.set_EdgeCube(x1, y1, z1, x2, y2, z2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_EdgeCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -630,9 +640,9 @@ namespace CubeAPI
                 bCube.clear_EdgeCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.clear_EdgeCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_EdgeCube(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -642,9 +652,9 @@ namespace CubeAPI
                 bCube.invert_EdgeCube(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.invert_EdgeCube(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -655,9 +665,9 @@ namespace CubeAPI
                 bCube.set_EdgeCube(p1, p2);
                 sendCommand(CTP.set_EdgeCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_EdgeCube(Pixel p1, Pixel p2, bool value)
@@ -667,9 +677,9 @@ namespace CubeAPI
                 bCube.set_EdgeCube(p1, p2, value);
                 sendCommand(CTP.set_EdgeCube(p1, p2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_EdgeCube(Pixel p1, Pixel p2)
@@ -679,9 +689,9 @@ namespace CubeAPI
                 bCube.clear_EdgeCube(p1, p2);
                 sendCommand(CTP.clear_EdgeCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_EdgeCube(Pixel p1, Pixel p2)
@@ -691,9 +701,9 @@ namespace CubeAPI
                 bCube.invert_EdgeCube(p1, p2);
                 sendCommand(CTP.invert_EdgeCube(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -704,9 +714,9 @@ namespace CubeAPI
                 bCube.set_Line(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.set_Line(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Line(int x1, int y1, int z1, int x2, int y2, int z2, bool value)
@@ -716,9 +726,9 @@ namespace CubeAPI
                 bCube.set_Line(x1, y1, z1, x2, y2, z2, value);
                 sendCommand(CTP.set_Line(x1, y1, z1, x2, y2, z2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Line(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -728,9 +738,9 @@ namespace CubeAPI
                 bCube.clear_Line(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.clear_Line(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Line(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -740,9 +750,9 @@ namespace CubeAPI
                 bCube.invert_Line(x1, y1, z1, x2, y2, z2);
                 sendCommand(CTP.invert_Line(x1, y1, z1, x2, y2, z2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -753,9 +763,9 @@ namespace CubeAPI
                 bCube.set_Line(p1, p2);
                 sendCommand(CTP.set_Line(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void set_Line(Pixel p1, Pixel p2, bool value)
@@ -765,9 +775,9 @@ namespace CubeAPI
                 bCube.set_Line(p1, p2, value);
                 sendCommand(CTP.set_Line(p1, p2, value));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void clear_Line(Pixel p1, Pixel p2)
@@ -777,9 +787,9 @@ namespace CubeAPI
                 bCube.clear_Line(p1, p2);
                 sendCommand(CTP.clear_Line(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
         public void invert_Line(Pixel p1, Pixel p2)
@@ -789,9 +799,9 @@ namespace CubeAPI
                 bCube.invert_Line(p1, p2);
                 sendCommand(CTP.invert_Line(p1, p2));
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 

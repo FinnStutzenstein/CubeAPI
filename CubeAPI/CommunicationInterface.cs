@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace CubeAPI
 {
-    internal class CommunicationInterface
+    internal class CommunicationInterface : IDisposable
     {
         SerialPort serialPort;
 
@@ -28,9 +28,9 @@ namespace CubeAPI
             {
                 init(STANDARTBAUDRATE, port, DEFAULTREADTIMEOUT, DEFAULTWRITETIMEOUT);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -41,9 +41,9 @@ namespace CubeAPI
             {
                 init(baud, port, DEFAULTREADTIMEOUT, DEFAULTWRITETIMEOUT);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -53,10 +53,15 @@ namespace CubeAPI
             {
                 init(baud, port, ReadTimeout, WriteTimeout);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
+        }
+
+        public void Dispose()
+        {
+            serialPort.Dispose();
         }
 
         public void init(string port)
@@ -99,7 +104,7 @@ namespace CubeAPI
 
         public void Connect()
         {
-            if (serialPort == null) throw new NoInitialisationException("SerialConnection wurde nicht initialisiert");
+            if (!isInitialized()) throw new NoInitialisationException("SerialConnection wurde nicht initialisiert");
 
 
             try
@@ -113,15 +118,8 @@ namespace CubeAPI
         }
 
         public string AutoConnect()
-        {
-            try
-            {
-                return AutoConnect(STANDARTBAUDRATE, DEFAULTREADTIMEOUT_CONNECT, DEFAULTWRITETIMEOUT_CONNECT);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+        {   
+            return AutoConnect(STANDARTBAUDRATE, DEFAULTREADTIMEOUT_CONNECT, DEFAULTWRITETIMEOUT_CONNECT);
         }
 
         public string AutoConnect(int baud)
@@ -130,9 +128,9 @@ namespace CubeAPI
             {
                 return AutoConnect(baud, DEFAULTREADTIMEOUT_CONNECT, DEFAULTWRITETIMEOUT_CONNECT);
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -142,32 +140,32 @@ namespace CubeAPI
 
             foreach (string s in ports)
             {
-                init(baud, s, ReadTimeout, WriteTimeout);
+                if (this.isInitialized()) //falls offen, schliessen!
+                {
+                    serialPort.Close();
+                }
+
                 try
                 {
-                    Connect();
+                    init(baud, s, ReadTimeout, WriteTimeout); // initialisieren
+                    serialPort.Open(); //öffnen
 
-                    if (isConnected())
+                    if (isConnected()) //wenn verbunden
                     {
-                        write(CTP.Handshake());
-                        byte ret = read();
-                        if (ret == (byte)CTP.Handshake().ToCharArray()[0]) //Handshake bekommen
-                        {
-                            return s; //aktuellen Portnamen zurückgeben
-                        }
+                        this.write(CTP.Handshake()); //auf handshake prüfen
+                        byte ret = this.read();      // falls keiner kommt --> error und Nächsten probieren
+                        if (ret != (byte)CTP.Handshake().ToCharArray()[0]) throw new ConnectionRefusedException("Kein Handshake beim Verbinden");
+
+                        return s;
                     }
-                }
-                catch (ConnectionRefusedException)
-                {
-                    //Nächsten probieren
-                }
+                } 
                 catch (NoInitialisationException)
                 {
                     throw new NoInitialisationException("SerialConnection wurde nicht initialisiert");
                 }
-                catch (Exception e)
+                catch
                 {
-                    throw e;
+                    //nix unternehmen bei Fehlern, nur neuen Versuch starten
                 }
 
             }
@@ -186,6 +184,11 @@ namespace CubeAPI
             }
         }
 
+        public bool isInitialized()
+        {
+            return serialPort != null;
+        }
+
         public bool isConnected()
         {
             try
@@ -196,6 +199,16 @@ namespace CubeAPI
             {
                 throw new NoInitialisationException("CommunicationInterface wurde nicht initialisiert!", e);
             }
+        }
+
+        public bool isReady()
+        {
+            if (isInitialized())
+            {
+                if (isConnected()) { return true; }
+            }
+
+            return false;
         }
 
 
@@ -209,9 +222,9 @@ namespace CubeAPI
                 }
                 else throw new NoConnectionException("Nicht verbunden!");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -226,49 +239,68 @@ namespace CubeAPI
                 }
                 else throw new NoConnectionException("Nicht verbunden!");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
         public void write(byte[] b)
         {
-            try
+            /*try
             {
                 if (isConnected()) serialPort.Write(b, 0, b.Length);
                 else throw new NoConnectionException("Nicht verbunden!");
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
+            }*/
+
+            int pos = 0;
+
+            while (pos < b.Length)
+            {
+
+                try
+                {
+                    serialPort.Write(b, pos, 1); //Ein byte schreiben
+
+                    pos++;
+                }
+                catch
+                {
+                    throw;
+                }
+            
             }
         }
 
         public void writeCube(vCube c)
         {
 
-            byte[] b_layer;
-
-            for (byte layer = 0; layer < 1; layer++) //Für jedes Layer   < 10 !! jetzt nur layer 0
+            for (byte layer = 0; layer < 10; layer++) //Für jedes Layer
             {
-                b_layer = new byte[14];
+                byte[] b_layer = new byte[14];
+
                 b_layer[0] = (byte)'v';
 
-                for (int i = 0; i < 100; i++) //jeder Pixel
+                for (int i = 0; i < 96; i++) //jeder Pixel, ausser letzten 4
                 {
                     int x = i % 10; //x im vCube
-                    int z = i / 10; //z im vCube
+                    int z = (int) Math.Floor(i / 10.0); //z im vCube
 
-                    int position = (int) Math.Floor(i / 8.0); //immer 8 Bit in einer Speicherstelle
+                    int position = (int) Math.Floor(i / 8.0) + 2; //immer 8 Bit in einer Speicherstelle !!+2 weil versetzt (0:'v', 1:layer + letzte 4 Pixel)
                     b_layer[position] = (byte)(b_layer[position] | ((c.get_Pixel(x, layer, z) ? 1 : 0) << (i % 8)) );   
                 }
 
+                for (int x = 6; x < 10; x++) //Letzten 4 (z von 6 bis 9)
+                { 
+                    b_layer[1] = (byte)(b_layer[1] | ((c.get_Pixel(x, layer, 9) ? 1 : 0) << (x-6) ));  //an speicherstelle 1
+                } 
+
                 //layer einfügen
-
-                b_layer[13] =  (byte) (b_layer[13] | ((byte)layer << 4));
-
-                
+                b_layer[1] =  (byte) (b_layer[1] | ((byte)layer << 4));
 
                 write(b_layer);
 
@@ -288,9 +320,9 @@ namespace CubeAPI
 
                 return read;
             }
-            catch(TimeoutException e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
